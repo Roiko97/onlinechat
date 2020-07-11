@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style type="text/css">
+    .test2-div {
+        float:right;
+        margin-right: 7px;
+        position: relative; /*日常相对定位*/
+        border-radius: 4px;
+        display:inline-block;
+        padding:5px;
+        border:1px solid #9FE759;
+        background: #9FE759;
+        max-width: 93%;
+        word-break:break-all;
+    }
+
+    .test2-div:before, .test2-div:after {
+        content: ""; /*:before和:after必带技能，重要性为满5颗星*/
+        display: block;
+        position: absolute; /*日常绝对定位*/
+        top: 8px;
+
+        border: 6px solid transparent;
+        border-left-color: #9FE759;
+        width: 0px;
+        height: 0px;
+    }
+
+    .test2-div:before {
+        right: -11px;
+        border-left-color: #9FE759;
+        z-index: 1
+    }
+
+    .test2-div:after {
+        right: -12px;
+        border-left-color: #9FE759;
+        z-index: 0
+    }
+</style>
+
+<body>
+<span class="test2-div" >
+      <ul>
+          <li>显示</li>
+      </ul>
+    </span>
+</body>
+
+</html>
