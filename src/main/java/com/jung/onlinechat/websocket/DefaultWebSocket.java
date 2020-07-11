@@ -13,6 +13,7 @@ import javax.websocket.server.ServerEndpoint;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jung.onlinechat.OnlinechatApplication;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
@@ -59,6 +60,15 @@ public class DefaultWebSocket {
 		// 这里以打印消息为例
 		String log = "receive msg from client,principal : " + principal + ", type : " + type + ", data : " + data;
 		System.out.println(log);
+
+		String principal_ = "1";
+		String type_ = "radio";
+		JSONObject data_ = new JSONObject();
+		data_.put("title", "test web socket");
+		data_.put("content", "Have you recieve this msg?--this msg from server.");
+
+		WebSocketSubject subject = WebSocketSubject.Holder.getSubject(principal_);
+		subject.notify(type_, data_.toJSONString());
 	}
 
 	@OnClose

@@ -9,6 +9,6 @@ public class Jump {
 
     @RequestMapping("/home")
     public String JumpHome(){
-        return "wechat";
+        return "socket";
     }
 }

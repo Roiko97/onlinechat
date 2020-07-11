@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace ="com.jung.onlinechat.dao.UserchatDao">
+    <resultMap id="userchat" type="com.jung.onlinechat.entity.UserChat">
+        <result property="FromUser" column="fromuser" javaType="String"/>
+        <result property="ToUser" column="touser" javaType="String"/>
+        <result property="Message" column="message" javaType="String"/>
+    </resultMap>
+    <select id="selectMsg" resultMap="userchat">
+        SELECT fromuser,touser,message FROM userchat
+        WHERE fromuser = #{fromuser} and touser = #{touser}
+    </select>
+    <insert id="insertmag" resultType="Integer" parameterType="String">
+        INSERT INTO userchat
+        VALUES(#{msg},#{fromuser},#{touser});
+    </insert>
+    <delete id="recall" parameterType="String">
+        DELETE FROM userchat
+        WHERE message = #{msg}
+    </delete>
+</mapper>

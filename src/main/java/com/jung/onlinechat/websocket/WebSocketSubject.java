@@ -8,7 +8,6 @@ import com.alibaba.fastjson.JSONObject;
 /***
  * Web Socket 主题(被观察者)
  *
- * @author svili
  *
  */
 public class WebSocketSubject extends Observable {

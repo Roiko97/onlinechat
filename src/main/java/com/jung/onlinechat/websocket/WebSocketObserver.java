@@ -11,7 +11,6 @@ import javax.websocket.Session;
  * 
  * @attation 重写equals方法{@link #equals(Object)}
  *
- * @author svili
  *
  */
 public class WebSocketObserver implements Observer {

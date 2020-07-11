@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
  * 容器启动时开启线程任务，每隔5秒向客户端发送消息。
  *
  */
-@WebServlet()
 public class SocketTest extends HttpServlet {
 
 	private static final long serialVersionUID = -7725924501352471504L;
