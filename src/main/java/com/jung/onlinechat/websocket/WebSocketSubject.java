@@ -1,9 +1,10 @@
 package com.jung.onlinechat.websocket;
 
-import java.util.Observable;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.alibaba.fastjson.JSONObject;
+
+import java.util.Observable;
+import java.util.concurrent.ConcurrentHashMap;
 
 /***
  * Web Socket 主题(被观察者)

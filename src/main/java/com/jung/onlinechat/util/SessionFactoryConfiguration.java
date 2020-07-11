@@ -15,7 +15,7 @@ import java.io.IOException;
 
 @Configuration
 public class SessionFactoryConfiguration {
-    //mybatis-config.xml配置文件的路径
+    //mybatis-config.xml.xml配置文件的路径
     @Value("${mybatis_config_file}")
     private String mybatisConfigFilePath;
     //mybatis-mapper文件所在路径
