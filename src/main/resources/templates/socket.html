@@ -14,7 +14,25 @@ hello,try  to send msg to server.<br>
 <script src="/jquery/jquery.min.js"></script>
 <script src="/jquery/jquery.websocket.js"></script>
 <script type="text/javascript">
-    var principal = '1';
+    function getCookie() {
+        var cookiesKey = "username";
+        var cookie = document.cookie;
+        var arr = cookie.split(";");
+        console.log(arr)
+        for(var i =0;i < arr.length;i++){
+            var res =arr[i].split("=")[0];
+            res = res.replace(/\s+/g,"");
+            if(res === cookiesKey){
+                return arr[i].split("=")[1];
+            }else{
+                console.log("ERORR  +-- Local://ToDoing Func:getCookie");
+            }
+        }
+    };
+</script>
+<script type="text/javascript">
+    var principal = getCookie();
+    console.log("principal = "+principal);
     var socketURL = 'ws://' + window.location.host
         + '/websocket/'+principal;
 
@@ -51,7 +69,7 @@ hello,try  to send msg to server.<br>
 
     //发送消息
     function send() {
-        websocket.send('radio', " hello,this msg from client request");
+        websocket.send("李四","你好李四，我是张三");
     }
 </script>
 </body>

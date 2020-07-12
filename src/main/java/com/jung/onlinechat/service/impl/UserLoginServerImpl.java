@@ -16,6 +16,8 @@ public class UserLoginServerImpl implements UserLoginServer {
     HttpSession session;
     public Boolean Login(String username){
         User user = userLoginDao.userSelect(username);
+        if(user == null)
+            return false;
         session.setAttribute("username",user.getName());
         System.out.println("目前登陆的用户是： "+ user.getName());
         return true;

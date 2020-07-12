@@ -51,8 +51,17 @@ public class OnlinechatController {
     @RequestMapping("/select")
     @ResponseBody
     private String SelectMsg(String fromuser,String touser){
+        //查询我发送的信息
         List<UserChat> list = onlinechatServer.selectMsg(fromuser,touser);
-        JSONObject jsonObject =  null;
+        //查询对方的内容
+        List<UserChat> otherlist =  onlinechatServer.selectMsg(touser,fromuser);
+
+        //TODO 通过时间进行排序，此处未实现，仅用于测试
+        for(int i=0;i<otherlist.size();i++){
+            list.add(otherlist.get(i));
+        }
+        //TODO END
+        JSONObject jsonObject =  new JSONObject();
         jsonObject.put("result",list);
         return jsonObject.toJSONString();
     }

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+    <link type="text/css" href="css/onlinechat.css" rel="stylesheet" />
+    <script type="text/javascript" src="js/onlinechat.js"></script>
+</head>
+
+<body>
+    <div class="fake" style="float: left; width:400px;border:1px solid ">
+
+        <div class="chathead">
+            <!-- 对话框头部 -->
+            <div class="line1" style="text-align: left;">
+                <div style="height: 100%; float: left; padding: 2px ; margin: 0 15px;">
+                </div>
+            </div>
+            <div class="line1" style="text-align: center;">
+                选择聊天对象
+                <input type="radio" value="张三" name="username" />张三
+                <input type=radio value="李四" name="username"/>李四
+            </div>
+            <div class="line1" style="text-align: right; margin-right:4px; width:30%;">
+                ···
+            </div>
+        </div>
+        <div class="chat" id="onlinechat">
+            <!-- 对话内容 -->
+            <!-- word1 左边 word2 右边-->
+
+
+<!--            <div class="dialog1">-->
+<!--                <div class="avatar1">李四</div>-->
+<!--                <div class="word1">-->
+<!--                    李四你好-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="dialog2">-->
+<!--                <div class="word2">-->
+<!--                    张三你好-->
+<!--                </div>-->
+<!--                <div class="avatar2">张三-->
+<!--                    <br/>-->
+<!--                <input type="radio" name="delete">-->
+<!--                </div>-->
+<!--            </div>-->
+
+        </div>
+        <div class="reply">
+            <!-- 回复内容 -->
+            <div class="msg">
+                <textarea id="msg" rows="5" cols="54" placeholder="输入消息" style="background:rgb(245 245 245);border: rgb(245 245 245);resize: none;outline:none;"></textarea>
+                <!-- <input type="text" name="msg" placeholder="输入消息" style="height: 45px;width:300px;"> -->
+            </div>
+            <input type=button value="发送"  style="margin-left: 85%;" onclick="submit()"> 
+        </div>
+    </div>
+</body>
+
+</html>

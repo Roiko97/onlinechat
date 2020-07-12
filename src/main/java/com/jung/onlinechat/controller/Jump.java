@@ -13,7 +13,7 @@ public class Jump {
 
     @RequestMapping("/home")
     public String JumpHome(){
-        return "socket";
+        return "onlinechat";
     }
     @RequestMapping("/login")
     public String jumpLogin(){
