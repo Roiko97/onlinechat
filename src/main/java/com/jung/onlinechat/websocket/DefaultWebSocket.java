@@ -1,6 +1,8 @@
 package com.jung.onlinechat.websocket;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -12,7 +14,12 @@ import javax.websocket.server.ServerEndpoint;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.jung.onlinechat.dao.UserLoginDao;
+import com.jung.onlinechat.dao.UserchatDao;
+import com.jung.onlinechat.service.OnlinechatServer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /***
  * Web Scoket服务.
@@ -27,9 +34,14 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
+@Service
 @ServerEndpoint(value = "/websocket/{principal}")
 public class DefaultWebSocket {
 
+	@Autowired
+	OnlinechatServer onlinechatServer;
+	@Autowired
+	UserchatDao userchatDao;
 	/** Web Socket连接建立成功的回调方法 */
 	@OnOpen
 	public void onOpen(@PathParam("principal") String principal, Session session) {
@@ -55,8 +67,18 @@ public class DefaultWebSocket {
 		// 这里以打印消息为例
 		String log = "receive msg from client,principal : " + principal + ", Touser = " + ToUser + ", Msg = " + Msg;
 		System.out.println(log);
+
+		//将信息进行存储
 		//调用发送信息的函数，向客户服务端发送信息
-		SendMessage(principal, ToUser,Msg);
+		if(Msg !=null){
+			SendMessage(principal, ToUser,Msg);
+		}
+		else{ //DELETE MESSAGE
+			String id = ToUser.substring(ToUser.indexOf("&")+1);
+			System.out.println(id);
+			ToUser =ToUser.substring(0,ToUser.indexOf("&"));
+			SendDeleteMessage(ToUser,id);
+		}
 	}
 
 	@OnClose
@@ -105,5 +127,15 @@ public class DefaultWebSocket {
 		webSocketSubject.notify(type,jsonObject.toJSONString());
 
 		//TODOING 保存聊天记录
+	}
+
+	public void SendDeleteMessage(String ToUser,String id){
+		String principal = ToUser;
+		JSONObject jsonObject = new JSONObject();
+		String type="notice";
+		jsonObject.put("id",id);
+		WebSocketSubject webSocketSubject = WebSocketSubject.Holder.getSubject(principal);
+		//服务器发送信息 发送者，发送信息
+		webSocketSubject.notify(type,jsonObject.toJSONString());
 	}
 }

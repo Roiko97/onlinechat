@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+<!--    <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>-->
+    <script src="/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/jquery/jquery.websocket.js"></script>
     <link type="text/css" href="css/onlinechat.css" rel="stylesheet" />
     <script type="text/javascript" src="js/onlinechat.js"></script>
 </head>
@@ -24,7 +26,7 @@
                 <input type=radio value="李四" name="username"/>李四
             </div>
             <div class="line1" style="text-align: right; margin-right:4px; width:30%;">
-                ···
+                <span onclick="msgdelete()">···</span>
             </div>
         </div>
         <div class="chat" id="onlinechat">
@@ -56,6 +58,9 @@
                 <!-- <input type="text" name="msg" placeholder="输入消息" style="height: 45px;width:300px;"> -->
             </div>
             <input type=button value="发送"  style="margin-left: 85%;" onclick="submit()"> 
+        </div>
+        <div id="hhh">
+
         </div>
     </div>
 </body>

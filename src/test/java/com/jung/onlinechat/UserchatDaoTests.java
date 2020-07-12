@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -27,7 +28,25 @@ public class UserchatDaoTests {
     }
 
     @Test
-    public void selectMsg(){
+    public void TestAboutString(){
         //userchatDao.selectMsg()
+        //<2020-07-11 21:43:01> 李四你好，我是张三
+        String date = "<2020-07-11 21:43:01>";
+        String res = date.substring(1,date.indexOf(">"));
+        System.out.println(res);
+    }
+    @Test
+    public void Time(){
+        SimpleDateFormat sdf  =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//创建日期转换对象：年月日 时分秒
+        String date = "2018-11-11 11:11:11"; //假设 设定日期是 2018-11-11 11:11:11
+        Date today = new Date(); 	     //今天 实际日期是  Debug：Wed Nov 12 12:00:18 CST 2018
+        try {
+            Date dateD = sdf.parse(date);    //转换为 date 类型 Debug：Sun Nov 11 11:11:11 CST 2018
+            boolean flag = dateD.getTime() >= today.getTime();
+            System.err.println("flag = "+flag);  // flag = false
+        } catch (ParseException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
     }
 }

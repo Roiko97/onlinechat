@@ -25,13 +25,9 @@ public class OnlinechatController {
     @RequestMapping("/save")
     @ResponseBody
     private String SaveMassage(String fromuser, String touser,String msg){
-        Boolean bool = onlinechatServer.insertmag(fromuser,touser,msg);
-        JSONObject jsonObject =  null;
-        if(bool == true){
-            jsonObject.put("result",true);
-        }else{
-            jsonObject.put("result",false);
-        }
+        String resMsg = onlinechatServer.insertmag(fromuser,touser,msg);
+        JSONObject jsonObject =  new JSONObject();
+        jsonObject.put("resMsg",resMsg);
         return jsonObject.toJSONString();
     }
 
@@ -39,7 +35,7 @@ public class OnlinechatController {
     @ResponseBody
     private String RecallMassgae(String msg){
         Boolean bool = onlinechatServer.recall(msg);
-        JSONObject jsonObject =  null;
+        JSONObject jsonObject =  new JSONObject();
         if(bool == true){
             jsonObject.put("result",true);
         }else{
@@ -56,13 +52,19 @@ public class OnlinechatController {
         //查询对方的内容
         List<UserChat> otherlist =  onlinechatServer.selectMsg(touser,fromuser);
 
-        //TODO 通过时间进行排序，此处未实现，仅用于测试
-        for(int i=0;i<otherlist.size();i++){
-            list.add(otherlist.get(i));
-        }
-        //TODO END
+//        //TODO 通过时间进行排序，此处未实现，仅用于测试
+//        for(int i=0;i<otherlist.size();i++){
+//            list.add(otherlist.get(i));
+//        }
+//        //TODO END
+        List<UserChat> resList = onlinechatServer.combinMsg(list,otherlist);
         JSONObject jsonObject =  new JSONObject();
-        jsonObject.put("result",list);
+        jsonObject.put("result",resList);
         return jsonObject.toJSONString();
     }
+//    @RequestMapping("/reflush")
+//    @ResponseBody
+//    private Boolean Reflush(){
+//        return true;
+//    }
 }

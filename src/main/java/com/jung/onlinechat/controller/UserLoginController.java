@@ -18,7 +18,6 @@ public class UserLoginController {
     @RequestMapping("/uselogin")
     @ResponseBody
     public Boolean Login(@Param("name")String name){
-        System.out.println("this");
         Boolean res = userLoginServer.Login(name);
         return res;
     }
