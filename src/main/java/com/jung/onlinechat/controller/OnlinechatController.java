@@ -4,12 +4,18 @@ package com.jung.onlinechat.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.jung.onlinechat.entity.UserChat;
 import com.jung.onlinechat.service.OnlinechatServer;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -62,9 +68,15 @@ public class OnlinechatController {
         jsonObject.put("result",resList);
         return jsonObject.toJSONString();
     }
-//    @RequestMapping("/reflush")
-//    @ResponseBody
-//    private Boolean Reflush(){
-//        return true;
-//    }
+    @RequestMapping("/upload")
+    private String UpdateFile(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+        System.out.println("现在正在进行图片上传");
+        String fileName = System.currentTimeMillis()+multipartFile.getOriginalFilename();
+        if(!multipartFile.isEmpty()){
+            FileUtils.copyInputStreamToFile(multipartFile.getInputStream(),new File("E:\\A",fileName));
+        }
+        return "redirect:/home";
+//        String url="";
+//        FileUtils.copyFile(new File("E:\\A","A.jpg"),new File("E:\\A","result.jpg"));
+    }
 }

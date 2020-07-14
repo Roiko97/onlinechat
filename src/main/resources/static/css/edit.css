@@ -1,0 +1,9 @@
+.toolbar {
+    border-top:1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+.text {
+    border: 1px solid rgb(245 245 245);
+    height: 60px;
+}

@@ -14,7 +14,6 @@ function getCookie() {
     }
 };
 function splitMsg(msg){
-
     var newmsg = msg.split(">")[1];
     newmsg = newmsg.substring(1);
     console.log("this is splitMsg:"+newmsg);
@@ -231,9 +230,11 @@ window.onpagehide = function(event) {
 }
 //TODO
 function submit() {
+
+    //全路径
+    var path = document.getElementById("upload").value;
     //获得发送信息
     var sendMsg = document.getElementById("msg").value;
-    console.log(sendMsg);
     //获得当前登陆用户名
     var nowuser = getCookie();
     //获得发送对象
@@ -245,26 +246,36 @@ function submit() {
             break;
         }
     }
+
     $.ajax({
-       type:"post",
-       url:"/onlinechat/save",
-       data:{
-           fromuser:nowuser,
-           touser:val,
-           msg:sendMsg
-       },
+        type:"post",
+        url:"/onlinechat/save",
+        data:{
+            fromuser:nowuser,
+            touser:val,
+            msg:sendMsg
+        },
         success:function (response) {
-           console.log("SUCCESS Local:onlinechat Func:submit");
-           response = JSON.parse(response);
-           TotaladdRight(nowuser,response.resMsg);
-           //由于addRigtht不包含时间信息，因此淘汰
-           //addRight(nowuser);
-           document.getElementById("msg").value= "";
-           websocket.send(val,response.resMsg);
+            console.log("SUCCESS Local:onlinechat Func:submit");
+            response = JSON.parse(response);
+            if(path===""){ //上传文本信息
+                TotaladdRight(nowuser,response.resMsg);
+                //由于addRigtht不包含时间信息，因此淘汰
+                //addRight(nowuser);
+            }else{ //上传图片信息
+                //开始进行样式的添加
+                addRigthFileMsg(nowuser,response.resMsg);
+                //添加点击事件
+                commitButton =  document.getElementById("filecommit");
+                commitButton.click();
+            }
+            websocket.send(val,response.resMsg);
+            document.getElementById("msg").value= "";
+            document.getElementById("upload").value=null;
 
         },
         error:function(err){
-           console.log("ERROR Local:onlinechat Func:submit");
+            console.log("ERROR Local:onlinechat Func:submit");
         }
     });
 }
@@ -308,3 +319,42 @@ function msgdelete() {
         }
     });
 }
+
+//TODO 文件上传
+function showFile(){
+    var path = document.getElementById("upload").value;
+    index = path.lastIndexOf("\\");
+    path = path.substring(index+1);
+    document.getElementById("msg").value = path;
+}
+
+//添加从服务器获取的对话框右边
+function addRigthFileMsg(username,msg) {
+
+    var originMsg = msg;
+    var div = document.getElementById("onlinechat");
+
+    var externalDiv = document.createElement("div");
+    externalDiv.className = "dialog2";
+    var internalDiv = document.createElement("div");
+    internalDiv.className = "word2";
+
+    var showNameDiv = document.createElement("div");
+    showNameDiv.textContent = username;
+    showNameDiv.className = "avatar2";
+
+    var br = document.createElement("br");
+    var radio = document.createElement("input");
+    radio.type = "radio";
+    radio.name = "delete";
+    showNameDiv.append(br);
+    showNameDiv.append(radio);
+    internalDiv.textContent = msg;
+    externalDiv.appendChild(internalDiv);
+    externalDiv.appendChild(showNameDiv);
+    //TODO add delete func
+    externalDiv.id = originMsg;
+    //TODO END
+    div.appendChild(externalDiv);
+}
+// TODO END
