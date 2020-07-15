@@ -19,7 +19,7 @@ public interface UserchatDao {
      * @param msg
      * @return
      */
-    public Integer insertmag(String fromuser, String touser,String msg);
+    public Integer insertmag(String fromuser, String touser,String msg,String type);
 
     /**
      * 查询用户信息

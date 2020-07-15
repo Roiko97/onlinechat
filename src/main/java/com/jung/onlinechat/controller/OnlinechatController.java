@@ -7,14 +7,19 @@ import com.jung.onlinechat.service.OnlinechatServer;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.List;
 
@@ -24,16 +29,21 @@ import java.util.List;
 @Controller
 @RequestMapping("/onlinechat")
 public class OnlinechatController {
-
     @Autowired
     private OnlinechatServer onlinechatServer;
 
     @RequestMapping("/save")
     @ResponseBody
-    private String SaveMassage(String fromuser, String touser,String msg){
-        String resMsg = onlinechatServer.insertmag(fromuser,touser,msg);
+    private String SaveMassage(HttpServletRequest httpServletRequest,String fromuser, String touser,String msg,String type){
+        //注：此处的resMsg包含了时间戳信息
+        String resMsg = onlinechatServer.insertmag(fromuser,touser,msg,type);
+        HttpSession session  = httpServletRequest.getSession();
+        if(type.equals("file")){
+            session.setAttribute("fileNewName",resMsg);
+        }
         JSONObject jsonObject =  new JSONObject();
         jsonObject.put("resMsg",resMsg);
+        jsonObject.put("type",type);
         return jsonObject.toJSONString();
     }
 
@@ -58,25 +68,26 @@ public class OnlinechatController {
         //查询对方的内容
         List<UserChat> otherlist =  onlinechatServer.selectMsg(touser,fromuser);
 
-//        //TODO 通过时间进行排序，此处未实现，仅用于测试
-//        for(int i=0;i<otherlist.size();i++){
-//            list.add(otherlist.get(i));
-//        }
-//        //TODO END
         List<UserChat> resList = onlinechatServer.combinMsg(list,otherlist);
         JSONObject jsonObject =  new JSONObject();
         jsonObject.put("result",resList);
         return jsonObject.toJSONString();
     }
     @RequestMapping("/upload")
-    private String UpdateFile(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+    private String UpdateFile(@RequestParam("file") MultipartFile multipartFile,HttpServletRequest httpServletRequest) throws IOException {
+        HttpSession session = httpServletRequest.getSession();
         System.out.println("现在正在进行图片上传");
-        String fileName = System.currentTimeMillis()+multipartFile.getOriginalFilename();
+        //String fileName = System.currentTimeMillis()+multipartFile.getOriginalFilename();
+        String fileName = session.getAttribute("fileNewName").toString();
         if(!multipartFile.isEmpty()){
             FileUtils.copyInputStreamToFile(multipartFile.getInputStream(),new File("E:\\A",fileName));
         }
         return "redirect:/home";
-//        String url="";
-//        FileUtils.copyFile(new File("E:\\A","A.jpg"),new File("E:\\A","result.jpg"));
+    }
+    @RequestMapping(value = "/download")
+    private ResponseEntity<Object> DownLoadFile(HttpServletRequest request) throws UnsupportedEncodingException, FileNotFoundException {
+        System.out.println("aa");
+        String FileName = request.getParameter("id");
+        return onlinechatServer.FileDownLoad(FileName);
     }
 }

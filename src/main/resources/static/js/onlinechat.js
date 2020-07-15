@@ -1,3 +1,48 @@
+//TODO 设置socket相关内容
+//获得发送方的用户名
+
+var principal = getCookie();
+//url地址
+var socketURL = 'ws://' + window.location.host
+    + '/websocket/'+principal;
+var websocket = $.websocket(socketURL, {
+    open : function() {
+        // when the socket opens
+        console.log("服务器准备就绪");
+    },
+    close : function() {
+        // when the socket closes
+        console.log("服务器已经关闭");
+    },
+    //收到服务端推送的消息处理
+    events : {
+        'radio' : function(event) {
+            var res = $.parseJSON(event.data);
+            addLeft(res.fromuser,res.content,event.type);
+        },
+        'notice' : function(event) {
+            console.info($.parseJSON(event.data));
+            var res = $.parseJSON(event.data);
+            var id = res.id;
+            var deleteParent = document.getElementById(id);
+            deleteParent.parentNode.removeChild(deleteParent);
+
+        },
+        //... more custom type of message
+    }
+});
+// 监听窗口关闭事件,当窗口关闭时,主动去关闭websocket连接,防止连接还没断开就关闭窗口,server端会抛异常.
+window.onbeforeunload = function() {
+    websocket.close();
+}
+
+// 监听浏览器回退事件
+window.onpagehide = function(event) {
+    websocket.close();
+}
+//TODO END
+
+//TODO 获得Cookie函数
 function getCookie() {
     var cookiesKey = "username";
     var cookie = document.cookie;
@@ -13,18 +58,26 @@ function getCookie() {
         }
     }
 };
+//TODO END
+
+//TODO 将字符串进行切割函数
+//示例<Date> message ===> message
 function splitMsg(msg){
-    var newmsg = msg.split(">")[1];
+    var newmsg = msg.split("}")[1];
     newmsg = newmsg.substring(1);
-    console.log("this is splitMsg:"+newmsg);
     return newmsg;
 };
-//一访问页面,就加载数据
-window.onload = function () {
-    var nowuser = getCookie();
-    var radios = document.getElementsByName("username");
+//TODO END
 
-    //TODO 仅DEMO使用
+//TODO 当页面加载，就读取相应的数据
+window.onload = function () {
+
+    //根据Cookie获取当前登陆的用户
+    var nowuser = getCookie();
+
+    //该radios对象为界面最上方的聊天对象
+    //下述代码段的目的是为了确定【在显示功能上】选择发送对象
+    var radios = document.getElementsByName("username");
     if(nowuser==="张三"){
         for(var i in radios){
             if(radios[i].value !="张三"){
@@ -39,8 +92,7 @@ window.onload = function () {
             }
         }
     }
-    //TODO END
-
+    //根据上面radios功能，获取发送对象的名称，保存在val中
     var val = null;
     for (i in radios) {
         if (radios[i].checked) {
@@ -48,11 +100,9 @@ window.onload = function () {
             break;
         }
     }
-    //代表没有选择
-    if (val == null) {
-        console.log("ERROR  +-- Local:onlinechat func:onload");
-        val = "李四"; //测试用
-    }
+
+
+    //向服务器发送请求
     $.ajax({
         type: "post",
         url: "/onlinechat/select/",
@@ -61,15 +111,18 @@ window.onload = function () {
             touser: val
         },
         success: function (response) {
-            console.log(response);
+
+            //将查询到的内容进行格式化操作（返回是list）
             response = JSON.parse(response);
             var info = response.result;
-            console.log(info);
+
+            //通过判断当前用户，实现判断内容添加左边还是右边
+            //注意：这里添加的内容是含有时间戳的
             for(var i in info){
                 if(info[i].fromUser === nowuser){
-                    TotaladdRight(info[i].fromUser,info[i].message);
+                    addRight(info[i].fromUser,info[i].message,info[i].type);
                 }else{
-                    addLeft(info[i].fromUser,info[i].message)
+                    addLeft(info[i].fromUser,info[i].message,info[i].type)
                 }
             }
         },
@@ -78,166 +131,124 @@ window.onload = function () {
         }
     });
 }
+//TODO END
 
-//添加对话框右边
-function addRight(username) {
-    var msg = document.getElementById("msg").value;
-    console.log(msg);
+//TODO 对话框右侧内容进行增加
+function addRight(username,msg,type) {
+    console.log("now type = "+type);
+    var originMsg = msg; //原始信息，含有时间戳
+    msg = splitMsg(msg); //去除时间戳的信息，将用于显示
+    /*
+        页面结构：
+
+        <div class="dialog2">
+            <div class="word2">
+                 {2020-07-11 21:43:01} 李四你好，我是张三
+            </div>
+            <div class="avatar2">张三
+                    <br />
+                <input type="radio" name="delete">
+            </div>
+        </div>
+    */
     var div = document.getElementById("onlinechat");
 
     var externalDiv = document.createElement("div");
     externalDiv.className = "dialog2";
-    var internalDiv = document.createElement("div");
-    internalDiv.className = "word2";
-
-    var showNameDiv = document.createElement("div");
-    showNameDiv.textContent = username;
-    showNameDiv.className = "avatar2";
-
-    var br = document.createElement("br");
-    var radio = document.createElement("input");
-    radio.type = "radio";
-    radio.name = "delete";
-    showNameDiv.append(br);
-    showNameDiv.append(radio);
-    internalDiv.textContent = msg;
-
-    externalDiv.appendChild(internalDiv);
-    externalDiv.appendChild(showNameDiv);
-    //TODO add delete func
-    externalDiv.id = msg;
-    //TODO END
-    div.appendChild(externalDiv);
-}
-
-//添加从服务器获取的对话框右边
-function TotaladdRight(username,msg) {
-    var originMsg = msg;
-    msg = splitMsg(msg);
-    var div = document.getElementById("onlinechat");
-
-    var externalDiv = document.createElement("div");
-    externalDiv.className = "dialog2";
-    var internalDiv = document.createElement("div");
-    internalDiv.className = "word2";
-
-    var showNameDiv = document.createElement("div");
-    showNameDiv.textContent = username;
-    showNameDiv.className = "avatar2";
-
-    var br = document.createElement("br");
-    var radio = document.createElement("input");
-    radio.type = "radio";
-    radio.name = "delete";
-    showNameDiv.append(br);
-    showNameDiv.append(radio);
-    internalDiv.textContent = msg;
-
-    externalDiv.appendChild(internalDiv);
-    externalDiv.appendChild(showNameDiv);
-    //TODO add delete func
     externalDiv.id = originMsg;
-    //TODO END
+
+    var internalDiv = document.createElement("div");
+    internalDiv.className = "word2";
+    //如果文本类型是文件，则需要附加点击事件
+    if(type ==="file"){
+        var a = document.createElement("a");
+        a.href = "onlinechat/download?id="+encodeURI(originMsg);
+        a.innerText=msg;
+        a.style.textDecoration="none";
+        internalDiv.appendChild(a);
+        //internalDiv.setAttribute("onclick","download()");
+    }else{
+        internalDiv.textContent = msg;
+    }
+
+
+    var showNameDiv = document.createElement("div");
+    showNameDiv.className = "avatar2";
+    showNameDiv.textContent = username;
+
+    var br = document.createElement("br");
+
+    var radio = document.createElement("input");
+    radio.type = "radio";
+    radio.name = "delete";
+
+    showNameDiv.append(br);
+    showNameDiv.append(radio);
+
+    externalDiv.appendChild(internalDiv);
+    externalDiv.appendChild(showNameDiv);
+
     div.appendChild(externalDiv);
 }
+//TODO END
+
+//TODO 对话框左侧内容进行添加
 //添加对话框左边
-function addLeft(username,msg) {
+function addLeft(username,msg,type) {
+    console.log("now type = "+type);
     var originMsg = msg;
     msg = splitMsg(msg);
-    //var div = document.getElementsByClassName("chat");
+
+    /*
+        页面结构：
+
+        <div class="dialog1">
+            <div class="avatar1">李四</div>
+            <div class="word1">
+                    李四你好
+            </div>
+        </div>
+    */
     var div = document.getElementById("onlinechat");
 
     var externalDiv = document.createElement("div");
     externalDiv.className = "dialog1";
-    var internalDiv = document.createElement("div");
-    internalDiv.className = "word1";
+    externalDiv.id = originMsg;
 
     var showNameDiv = document.createElement("div");
-    showNameDiv.textContent = username;
     showNameDiv.className = "avatar1";
+    showNameDiv.textContent = username;
 
-    internalDiv.textContent = msg;
+    var internalDiv = document.createElement("div");
+    internalDiv.className = "word1";
+    if(type ==="file"){ //如果文本类型是文件，则添加点击事件
+        var a = document.createElement("a");
+        a.href = "onlinechat/download?id="+encodeURI(originMsg);
+        a.innerText=msg;
+        a.style.textDecoration="none";
+        internalDiv.appendChild(a);
+        //internalDiv.setAttribute("onclick","download()");
+    }else{
+        internalDiv.textContent = msg;
+    }
 
     externalDiv.appendChild(showNameDiv);
     externalDiv.appendChild(internalDiv);
-    //TODO add delete func
-    externalDiv.id = originMsg;
-    //TODO END
+
     div.appendChild(externalDiv);
 }
+//TODO END
 
-//TODO SOCKET
-//获得发送方的用户名
-
-var principal = getCookie();
-//url地址
-var socketURL = 'ws://' + window.location.host
-    + '/websocket/'+principal;
-var websocket = $.websocket(socketURL, {
-    open : function() {
-        // when the socket opens
-        //alert("open");
-        console.log("服务器准备就绪");
-    },
-    close : function() {
-        // when the socket closes
-        //alert("close");
-        console.log("服务器已经关闭");
-    },
-    //收到服务端推送的消息处理
-    events : {
-        'radio' : function(event) {
-            var res = $.parseJSON(event.data);
-            //var notimeMsg = "<> "+res.content;
-            //addLeft(res.fromuser,notimeMsg);
-            addLeft(res.fromuser,res.content);
-        },
-        'notice' : function(event) {
-            console.info($.parseJSON(event.data));
-            var res = $.parseJSON(event.data);
-            var id = res.id;
-            var deleteParent = document.getElementById(id);
-            deleteParent.parentNode.removeChild(deleteParent);
-            // if(res.needrefresh == true){
-            //     $.ajax({
-            //         type:"post",
-            //         url:"onlinechat/reflush",
-            //         data:{
-            //
-            //         },
-            //         success:function (response) {
-            //             //却有奇效
-            //             location.replace(location);
-            //             console.log("now already reflush");
-            //         },
-            //         error:function(error){
-            //             console.log("ERROR Local +-- onlinechat Func:global-events --+");
-            //         }
-            //     })
-            // }
-        },
-        //... more custom type of message
-    }
-});
-// 监听窗口关闭事件,当窗口关闭时,主动去关闭websocket连接,防止连接还没断开就关闭窗口,server端会抛异常.
-window.onbeforeunload = function() {
-    websocket.close();
-}
-
-// 监听浏览器回退事件
-window.onpagehide = function(event) {
-    websocket.close();
-}
-//TODO
+//TODO 提交按钮
 function submit() {
 
-    //全路径
+    //获得文件的全路径（路径+文件名）（可能该值为"")
     var path = document.getElementById("upload").value;
-    //获得发送信息
+    //获得将要发送的信息
     var sendMsg = document.getElementById("msg").value;
-    //获得当前登陆用户名
+    //获得当前登陆的用户名
     var nowuser = getCookie();
-    //获得发送对象
+    //获取接收信息的对象名（存值在val处）
     var radios = document.getElementsByName("username");
     var val = null;
     for (i in radios) {
@@ -246,6 +257,12 @@ function submit() {
             break;
         }
     }
+    var type;
+    if(path ===""){
+        type="text";
+    }else{
+        type = "file";
+    }
 
     $.ajax({
         type:"post",
@@ -253,23 +270,27 @@ function submit() {
         data:{
             fromuser:nowuser,
             touser:val,
-            msg:sendMsg
+            msg:sendMsg,
+            type:type
         },
         success:function (response) {
-            console.log("SUCCESS Local:onlinechat Func:submit");
+
+            //将文本内容进行JSON序列化
             response = JSON.parse(response);
-            if(path===""){ //上传文本信息
-                TotaladdRight(nowuser,response.resMsg);
-                //由于addRigtht不包含时间信息，因此淘汰
-                //addRight(nowuser);
-            }else{ //上传图片信息
-                //开始进行样式的添加
-                addRigthFileMsg(nowuser,response.resMsg);
-                //添加点击事件
+            console.log(response);
+            addRight(nowuser,response.resMsg,response.type);
+            if(response.type === "file"){
+                //将文件发送至服务端，进行文件存储
                 commitButton =  document.getElementById("filecommit");
                 commitButton.click();
             }
-            websocket.send(val,response.resMsg);
+            //websocket.send(val,response.resMsg);
+            var myjson = {
+                msg:response.resMsg,
+                type:response.type
+            };
+            websocket.send(val,JSON.stringify(myjson));
+            //websocket.send(val,"{'张三':18,'李四':20}");
             document.getElementById("msg").value= "";
             document.getElementById("upload").value=null;
 
@@ -279,21 +300,23 @@ function submit() {
         }
     });
 }
+//TODO END
 
-//TODO DELETE FUNCTION
+//TODO 撤销函数，将用户发送的信息进行撤回
 function msgdelete() {
+
+    //获取所有的按钮,并且判断是哪个按钮被点击的，找到其值
     var radios = document.getElementsByName("delete");
     var parent;
     for (var i in radios) {
         if (radios[i].checked) {
             parent = radios[i].parentNode;
             parent = parent.parentNode;
-            console.log(parent.id);
             break;
         }
     }
 
-    //TODO SEND RADIO
+    //获取接收对象的姓名
     var sendRadios = document.getElementsByName("username");
     var val = null;
     for (var i in sendRadios) {
@@ -302,59 +325,36 @@ function msgdelete() {
             break;
         }
     }
-    //获得了parent信息
-    var obj = val +"&"+parent.id;
+
+    //注意：此处规定了发送删除信息的发送格式
+    //接收用户名&聊天内容
+    //var obj = val +"&"+parent.id;
     $.ajax({
-       type:"post",
-       url:"onlinechat/recall",
-       data:{
-           msg:parent.id
-       },
+        type:"post",
+        url:"onlinechat/recall",
+        data:{
+            msg:parent.id
+        },
         success:function (response) {
-           parent.parentNode.removeChild(parent);
-           websocket.send(obj);
+            parent.parentNode.removeChild(parent);
+            var myjson = {
+                msg:parent.id,
+                type:"recall"
+            };
+            websocket.send(val,JSON.stringify(myjson));
         },
         error:function (err) {
 
         }
     });
 }
+//TODO END
 
-//TODO 文件上传
+//TODO 将文件的全路径进行截断，保留文件名，并且显示在发送栏中
 function showFile(){
     var path = document.getElementById("upload").value;
     index = path.lastIndexOf("\\");
     path = path.substring(index+1);
     document.getElementById("msg").value = path;
 }
-
-//添加从服务器获取的对话框右边
-function addRigthFileMsg(username,msg) {
-
-    var originMsg = msg;
-    var div = document.getElementById("onlinechat");
-
-    var externalDiv = document.createElement("div");
-    externalDiv.className = "dialog2";
-    var internalDiv = document.createElement("div");
-    internalDiv.className = "word2";
-
-    var showNameDiv = document.createElement("div");
-    showNameDiv.textContent = username;
-    showNameDiv.className = "avatar2";
-
-    var br = document.createElement("br");
-    var radio = document.createElement("input");
-    radio.type = "radio";
-    radio.name = "delete";
-    showNameDiv.append(br);
-    showNameDiv.append(radio);
-    internalDiv.textContent = msg;
-    externalDiv.appendChild(internalDiv);
-    externalDiv.appendChild(showNameDiv);
-    //TODO add delete func
-    externalDiv.id = originMsg;
-    //TODO END
-    div.appendChild(externalDiv);
-}
-// TODO END
+//TODO END

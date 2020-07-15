@@ -32,7 +32,6 @@ import org.springframework.stereotype.Service;
  *
  *
  */
-
 @Component
 @Service
 @ServerEndpoint(value = "/websocket/{principal}")
@@ -63,22 +62,31 @@ public class DefaultWebSocket {
 		String ToUser = json.getString("type");
 		String Msg = json.getString("data");
 
+		JSONObject childJson = JSON.parseObject(Msg);
+		String info = childJson.getString("msg");
+		String types = childJson.getString("type");
+
 		// 对消息的处理,根据义务自行定义。
 		// 这里以打印消息为例
 		String log = "receive msg from client,principal : " + principal + ", Touser = " + ToUser + ", Msg = " + Msg;
 		System.out.println(log);
 
-		//将信息进行存储
-		//调用发送信息的函数，向客户服务端发送信息
-		if(Msg !=null){
-			SendMessage(principal, ToUser,Msg);
+		if(!types.equals("recall")){ //不为删除
+			SendMessage(principal, ToUser,info,types);
+		}else{ //将要撤回相关信息
+			SendDeleteMessage(ToUser,info);
 		}
-		else{ //DELETE MESSAGE
-			String id = ToUser.substring(ToUser.indexOf("&")+1);
-			System.out.println(id);
-			ToUser =ToUser.substring(0,ToUser.indexOf("&"));
-			SendDeleteMessage(ToUser,id);
-		}
+
+//		// 如果Msg不为空，代表发送信息
+//		if(info !=null){
+//			SendMessage(principal, ToUser,info,types);
+//		}
+//		else{ //如果Msg为空，代表撤回信息
+//			String id = ToUser.substring(ToUser.indexOf("&")+1);
+//			System.out.println(id);
+//			ToUser =ToUser.substring(0,ToUser.indexOf("&"));
+//			SendDeleteMessage(ToUser,id);
+//		}
 	}
 
 	@OnClose
@@ -114,7 +122,7 @@ public class DefaultWebSocket {
 	 * @param ToUser
 	 * @param msg
 	 */
-	public void SendMessage(String FromUser,String ToUser,String msg){
+	public void SendMessage(String FromUser,String ToUser,String msg,String types){
 		//接收浏览器
 		String principal = ToUser;
 		JSONObject jsonObject = new JSONObject();
@@ -122,11 +130,10 @@ public class DefaultWebSocket {
 		//存储发送信息
 		jsonObject.put("fromuser",FromUser);
 		jsonObject.put("content",msg);
+		jsonObject.put("type",types);
 		WebSocketSubject webSocketSubject = WebSocketSubject.Holder.getSubject(principal);
 		//服务器发送信息 发送者，发送信息
 		webSocketSubject.notify(type,jsonObject.toJSONString());
-
-		//TODOING 保存聊天记录
 	}
 
 	public void SendDeleteMessage(String ToUser,String id){

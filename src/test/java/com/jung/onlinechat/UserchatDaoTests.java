@@ -24,7 +24,7 @@ public class UserchatDaoTests {
         String msg = "哇 你居然是张三，我是罗翔";
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
         String date = df.format(new Date());
-        userchatDao.insertmag("李四","张三","<"+date+"> "+msg);
+        userchatDao.insertmag("李四","张三","<"+date+"> "+msg,"text");
     }
 
     @Test

@@ -14,6 +14,12 @@ public class UserLoginServerImpl implements UserLoginServer {
     UserLoginDao userLoginDao;
     @Autowired
     HttpSession session;
+
+    /**
+     * 用户登陆（仅以用户名），登陆成功后将用户名存储在key=username的session中
+     * @param username
+     * @return
+     */
     public Boolean Login(String username){
         User user = userLoginDao.userSelect(username);
         if(user == null)

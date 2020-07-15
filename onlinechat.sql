@@ -20,7 +20,7 @@
 --
 DROP DATABASE IF EXISTS `onlinechat`;
 CREATE DATABASE `onlinechat`;
-USE `onlinechat`;
+use `onlinechat`;
 DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -54,7 +54,8 @@ DROP TABLE IF EXISTS `userchat`;
 CREATE TABLE `userchat` (
   `message` text,
   `fromuser` varchar(30) DEFAULT NULL,
-  `touser` varchar(30) DEFAULT NULL
+  `touser` varchar(30) DEFAULT NULL,
+  `type` varchar(10) DEFAULT 'text'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -64,7 +65,7 @@ CREATE TABLE `userchat` (
 
 LOCK TABLES `userchat` WRITE;
 /*!40000 ALTER TABLE `userchat` DISABLE KEYS */;
-INSERT INTO `userchat` VALUES ('<2020-07-11 21:43:01> 李四你好，我是张三','张三','李四'),('<2020-07-12 17:27:00> 哇 你居然是张三，我是罗翔','李四','张三');
+INSERT INTO `userchat` VALUES ('{2020-07-11 21：43：01} 李四你好，我是张三','张三','李四','text'),('{2020-07-12 17：27：00} 哇 你居然是张三，我是罗翔','李四','张三','text');
 /*!40000 ALTER TABLE `userchat` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -77,4 +78,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-07-12 19:53:59
+-- Dump completed on 2020-07-15 15:08:06
