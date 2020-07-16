@@ -207,3 +207,21 @@
     background: rgba(0, 0, 0, 0.1);
 
 }
+
+.emojo {
+    border: 1px solid rgb(214, 214, 214);
+    background-color: white;
+    box-shadow: rgb(214, 214, 214) 1px 1px 10px 3px;
+    border-radius: 5px;
+    padding: 3px 10px;
+    float: left;
+    position: absolute;
+    top: -870%;
+    left: 24%;
+    display: none;
+}
+
+td {
+    width: 30px;
+    height: 30px;
+}

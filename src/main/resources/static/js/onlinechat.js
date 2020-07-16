@@ -432,3 +432,30 @@ document.onkeydown = function (event) {
     }
 };
 //TODO END
+
+//TODO 显示emojo的表格
+function showTable(){
+    var table = document.getElementById("emojo");
+    table.style.display="block";
+}
+//TODO END
+
+//TODO 按键事件，当点击事件不在表格/图片上时，emojo的表格自动关闭
+$(document).click(function(e){
+    var target = e?e.target:window.event.srcElement;
+    var name = target.getAttribute("name");
+    if(target.id !="emojo" && name !="emojos" && target.id!="emojoTip"){
+        var table = document.getElementById("emojo");
+        table.style.display="none";
+    }
+});
+//TODO END
+
+//TODO 往聊天框中添加emojo表情
+function addEmojo(obj){
+    var img = obj.getAttribute("value");
+    document.getElementById("msg").value +=img;
+    var table = document.getElementById("emojo");
+    table.style.display="none";
+}
+//TODO END
