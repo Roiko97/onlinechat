@@ -19,6 +19,10 @@ var websocket = $.websocket(socketURL, {
         'radio' : function(event) {
             var res = $.parseJSON(event.data);
             addLeft(res.fromuser,res.content,event.type);
+
+            //滚动条自动跟随
+            var div_chat = document.getElementById("onlinechat");
+            div_chat.scrollTop = div_chat.scrollHeight;
         },
         'notice' : function(event) {
             console.info($.parseJSON(event.data));
@@ -26,6 +30,23 @@ var websocket = $.websocket(socketURL, {
             var id = res.id;
             var deleteParent = document.getElementById(id);
             deleteParent.parentNode.removeChild(deleteParent);
+
+            /**
+             * 新增提醒，提醒内容：对方撤回了一条内容
+             */
+            var parent_div = document.getElementById("onlinechat");
+            var class_tip = document.createElement("div");
+            class_tip.className="tip dialog1";
+            class_tip.style.margin="20px 125px";
+            var span_cellTip = document.createElement("span");
+            span_cellTip.className="cellTip";
+            span_cellTip.textContent="对方撤回了一条内容";
+            class_tip.appendChild(span_cellTip);
+            parent_div.appendChild(class_tip);
+            // 完成对提示内容的增加
+
+            //滚动条自动跟随
+            parent_div.scrollTop = parent_div.scrollHeight;
 
         },
         //... more custom type of message
@@ -124,6 +145,10 @@ window.onload = function () {
                 }else{
                     addLeft(info[i].fromUser,info[i].message,info[i].type)
                 }
+
+                //滚动条自动跟随
+                var div_chat = document.getElementById("onlinechat");
+                div_chat.scrollTop = div_chat.scrollHeight;
             }
         },
         error: function (err) {
@@ -284,6 +309,11 @@ function submit() {
                 commitButton =  document.getElementById("filecommit");
                 commitButton.click();
             }
+
+            //让下拉滚动条自动跟随
+            var div_chat = document.getElementById("onlinechat");
+            div_chat.scrollTop = div_chat.scrollHeight;
+
             //websocket.send(val,response.resMsg);
             var myjson = {
                 msg:response.resMsg,
@@ -325,10 +355,8 @@ function msgdelete() {
             break;
         }
     }
-
-    //注意：此处规定了发送删除信息的发送格式
-    //接收用户名&聊天内容
-    //var obj = val +"&"+parent.id;
+    //记录将要撤回的内容，为后续重新编辑准备 <此处内容已经进行格式化>
+    var recall_msg = splitMsg(parent.id);
     $.ajax({
         type:"post",
         url:"onlinechat/recall",
@@ -336,7 +364,35 @@ function msgdelete() {
             msg:parent.id
         },
         success:function (response) {
+            //将该内容进行删除
             parent.parentNode.removeChild(parent);
+
+            /*
+            * 增加输出提示，并且允许用户重新编辑
+            * */
+            var parent_onlinechat = document.getElementById("onlinechat");
+            var div_tip = document.createElement("div");
+            div_tip.className="tip dialog2";
+            div_tip.style.width="190px";
+            var span_cellTip = document.createElement("span");
+            span_cellTip.className="cellTip";
+            span_cellTip.textContent="我撤回了一条内容";
+            var label_re_edit = document.createElement("label");
+            label_re_edit.className="re_edit";
+            label_re_edit.setAttribute("onclick","re_edit(this)");
+            label_re_edit.textContent="重新编辑"
+            //注意，这里存储的是name，不是id，注意与其他标签进行区别.
+            //注意：这里设置name的方式和id的方式不同
+            label_re_edit.setAttribute("name",recall_msg);
+
+            div_tip.appendChild(span_cellTip);
+            div_tip.appendChild(label_re_edit);
+            parent_onlinechat.appendChild(div_tip);
+            //重新编辑功能结束
+
+            //让下拉滚动条自动跟随
+            parent_onlinechat.scrollTop = parent_onlinechat.scrollHeight;
+
             var myjson = {
                 msg:parent.id,
                 type:"recall"
@@ -357,4 +413,22 @@ function showFile(){
     path = path.substring(index+1);
     document.getElementById("msg").value = path;
 }
+//TODO END
+
+//TODO 将重新编辑的内容显示在textare内，提供用户重新编辑其文本
+function re_edit(obj) {
+    //这里的obj实际为整个label信息，需要通过getAttribute来获取，其中参数代表标签的属性
+    var re_edit_msg = obj.getAttribute("name");
+    console.log(re_edit_msg);
+    document.getElementById("msg").value = re_edit_msg;
+}
+//TODO END
+
+//TODO 键盘的回车事件，发送消息
+document.onkeydown = function (event) {
+    var e = event || window.event;
+    if(!e.shiftKey && e.keyCode ==13){
+        $("#send_msg").click();
+    }
+};
 //TODO END

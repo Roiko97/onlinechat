@@ -74,6 +74,7 @@
     border-top: 1px solid rgb(214, 214, 214);
     border-bottom: 1px solid rgb(214, 214, 214);
     padding: 5px 0 0 0;
+    overflow-y: auto;
 }
 
 .avatar1 {
@@ -171,10 +172,38 @@
 }
 
 
-/*
-.msg{
-    margin-top: 10px;
-    margin-left:20px;
+.cellTip {
+    color:white;
+    font-size: 15px;
+}
+.tip{
+    background-color: #dadada;
+    width: 135px;
+    border-radius: 5px;
+    padding-left:1%;
+    padding-right: 1%;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    margin:20px 90px;
+}
+.re_edit{
+    padding-left: 5px;
+    font-size:15px;
+    color:blue;
+    text-decoration: underline;
+}
+
+.chat::-webkit-scrollbar {
+    width:10px;
+}
+
+.chat::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+
+    border-radius: 10px;
+
+    -webkit-box-shadow: inset005pxrgba(0, 0, 0, 0.2);
+
+    background: rgba(0, 0, 0, 0.1);
 
 }
-*/
