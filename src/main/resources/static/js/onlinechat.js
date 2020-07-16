@@ -100,14 +100,14 @@ window.onload = function () {
     //下述代码段的目的是为了确定【在显示功能上】选择发送对象
     var radios = document.getElementsByName("username");
     if(nowuser==="张三"){
-        for(var i in radios){
+        for(var i=0;i<radios.length;i++){
             if(radios[i].value !="张三"){
                 radios[i].checked = true;
             }
         }
     }
     if(nowuser==="李四"){
-        for(var i in radios){
+        for(var i=0;i<radios.length;i++){
             if(radios[i].value !="李四"){
                 radios[i].checked = true;
             }
@@ -115,13 +115,12 @@ window.onload = function () {
     }
     //根据上面radios功能，获取发送对象的名称，保存在val中
     var val = null;
-    for (i in radios) {
+    for(var i=0;i<radios.length;i++){
         if (radios[i].checked) {
             val = radios[i].value;
             break;
         }
     }
-
 
     //向服务器发送请求
     $.ajax({
@@ -139,7 +138,7 @@ window.onload = function () {
 
             //通过判断当前用户，实现判断内容添加左边还是右边
             //注意：这里添加的内容是含有时间戳的
-            for(var i in info){
+            for(var i=0;i<info.length;i++){
                 if(info[i].fromUser === nowuser){
                     addRight(info[i].fromUser,info[i].message,info[i].type);
                 }else{
@@ -276,12 +275,13 @@ function submit() {
     //获取接收信息的对象名（存值在val处）
     var radios = document.getElementsByName("username");
     var val = null;
-    for (i in radios) {
+    for(var i=0;i<radios.length;i++){
         if (radios[i].checked) {
             val = radios[i].value;
             break;
         }
     }
+
     var type;
     if(path ===""){
         type="text";
@@ -338,8 +338,9 @@ function msgdelete() {
     //获取所有的按钮,并且判断是哪个按钮被点击的，找到其值
     var radios = document.getElementsByName("delete");
     var parent;
-    for (var i in radios) {
-        if (radios[i].checked) {
+
+    for(var i =0;i<radios.length;i++){
+        if(radios[i].checked){
             parent = radios[i].parentNode;
             parent = parent.parentNode;
             break;
@@ -349,7 +350,8 @@ function msgdelete() {
     //获取接收对象的姓名
     var sendRadios = document.getElementsByName("username");
     var val = null;
-    for (var i in sendRadios) {
+
+    for(var i=0;i<sendRadios.length;i++){
         if (sendRadios[i].checked) {
             val = sendRadios[i].value;
             break;
