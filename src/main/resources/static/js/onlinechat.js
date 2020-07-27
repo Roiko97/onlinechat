@@ -75,7 +75,7 @@ function getCookie() {
         if (res === cookiesKey) {
             return arr[i].split("=")[1];
         } else {
-            console.log("ERORR  +-- Local://ToDoing Func:getCookie");
+            // console.log("ERORR  +-- Local://ToDoing Func:getCookie");
         }
     }
 };
@@ -306,8 +306,9 @@ function submit() {
             addRight(nowuser,response.resMsg,response.type);
             if(response.type === "file"){
                 //将文件发送至服务端，进行文件存储
-                commitButton =  document.getElementById("filecommit");
-                commitButton.click();
+                // commitButton =  document.getElementById("filecommit");
+                // commitButton.click();
+                fileSubmit();
             }
 
             //让下拉滚动条自动跟随
@@ -459,5 +460,23 @@ function addEmojo(obj){
     document.getElementById("msg").value +=img;
     var table = document.getElementById("emojo");
     table.style.display="none";
+}
+//TODO END
+
+//TODO 文件上传
+function fileSubmit(){
+    var formData = new FormData();
+    var type = "file";
+    formData.append(type,$("#upload")[0].files[0]);
+    $.ajax({
+       type:"post",
+       url:"/onlinechat/upload",
+       data:formData,
+       processData:false,
+       contentType:false,
+       success:function (response) {
+
+       }
+    });
 }
 //TODO END

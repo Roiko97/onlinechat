@@ -79,6 +79,7 @@ public class OnlinechatController {
         System.out.println("现在正在进行图片上传");
         //String fileName = System.currentTimeMillis()+multipartFile.getOriginalFilename();
         String fileName = session.getAttribute("fileNewName").toString();
+        System.out.println(multipartFile.getBytes());
         if(!multipartFile.isEmpty()){
             FileUtils.copyInputStreamToFile(multipartFile.getInputStream(),new File("E:\\A",fileName));
         }

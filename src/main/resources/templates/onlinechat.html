@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="multipart/form-data; charset=utf-8" />
     <title>Title</title>
 <!--    <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>-->
     <script src="/jquery/jquery.min.js"></script>
@@ -58,11 +59,12 @@
             </div>
             <!-- TODO 文件上传功能 -->
             <div style="position: relative">
-                <form method="post" action="/onlinechat/upload" enctype="multipart/form-data" style="display:inline-block;margin-left: 5px">
-                    <input id="filecommit" type="submit" value="文件" style="position: relative;display: none">
+                <!-- action="/onlinechat/upload"-->
+                <form method="post" enctype="multipart/form-data" style="display:inline-block;margin-left: 5px">
+<!--                    <input id="filecommit" type="submit" value="文件" style="position: relative;display: none">-->
+                    <input id="filecommit" type="button" value="文件" style="position: relative;display: none">
                     <input id="upload" type="file" name="file" style="position: absolute;opacity: 0;width:20px" onchange="showFile()">
                     <span>...</span>
-
                 </form>
 
                 <!-- 新增 emojo表情-->
